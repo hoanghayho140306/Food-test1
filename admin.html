@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Admin Food Shop</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f5f6f7;
+}
+header{
+  background:#00b14f;
+  color:#fff;
+  padding:15px 30px;
+  font-size:22px;
+  font-weight:bold;
+}
+.login, .admin{
+  max-width:1000px;
+  margin:40px auto;
+}
+.card{
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
+  margin-bottom:20px;
+}
+input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+button{
+  background:#00b14f;
+  color:#fff;
+  border:none;
+  padding:10px 15px;
+  border-radius:8px;
+  cursor:pointer;
+  margin-top:10px;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+}
+.stat{
+  background:#fff;
+  border-radius:12px;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+.stat h3{
+  margin:0;
+  font-size:16px;
+  color:#666;
+}
+.stat p{
+  font-size:22px;
+  font-weight:bold;
+  margin-top:10px;
+  color:#00b14f;
+}
+.order{
+  border-bottom:1px solid #eee;
+  padding:15px 0;
+}
+.order:last-child{border:none}
+.btn{
+  padding:6px 12px;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+  margin-right:8px;
+}
+.done{background:#27ae60;color:#fff}
+.del{background:#e74c3c;color:#fff}
+.hide{display:none}
+</style>
+</head>
+
+<body>
+
+<header>🍔 ADMIN FOOD SHOP</header>
+
+<!-- LOGIN -->
+<div class="login card" id="loginBox">
+  <h2>🔐 Đăng nhập Admin</h2>
+  <input type="password" id="pass" placeholder="Nhập mật khẩu admin">
+  <button onclick="login()">Đăng nhập</button>
+  <p id="err" style="color:red"></p>
+</div>
+
+<!-- ADMIN -->
+<div class="admin hide" id="adminBox">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><h3>📅 Hôm nay</h3><p id="day">0đ</p></div>
+    <div class="stat"><h3>📆 Tuần</h3><p id="week">0đ</p></div>
+    <div class="stat"><h3>🗓 Tháng</h3><p id="month">0đ</p></div>
+    <div class="stat"><h3>🧾 Tổng đơn</h3><p id="count">0</p></div>
+  </div>
+
+  <!-- ORDERS -->
+  <div class="card">
+    <h2>📦 Đơn hàng</h2>
+    <div id="orders"></div>
+  </div>
+
+</div>
+
+<script>
+const PASSWORD = "admin123";
+
+function login(){
+  if(pass.value === PASSWORD){
+    loginBox.classList.add('hide');
+    adminBox.classList.remove('hide');
+    load();
+  }else{
+    err.innerText = "Sai mật khẩu!";
+  }
+}
+
+function load(){
+  let orders = JSON.parse(localStorage.getItem('orders')||'[]');
+  let box = document.getElementById('orders');
+  let today = new Date();
+
+  let day=0, week=0, month=0;
+  box.innerHTML='';
+
+  orders.forEach((o,i)=>{
+    let d = new Date(o.time);
+
+    if(o.status==="Đã giao"){
+      if(d.toDateString()===today.toDateString()) day+=o.total;
+      if((today-d)/(1000*60*60*24)<7) week+=o.total;
+      if(d.getMonth()===today.getMonth() && d.getFullYear()===today.getFullYear()) month+=o.total;
+    }
+
+    box.innerHTML+=`
+      <div class="order">
+        <b>Đơn #${i+1}</b> - ${o.time}<br>
+        <ul>${o.items.map(m=>`<li>${m.name} x ${m.qty}</li>`).join('')}</ul>
+        <b>Tổng:</b> ${o.total.toLocaleString()}đ<br>
+        <b>Trạng thái:</b> ${o.status||'Chưa xử lý'}<br><br>
+        <button class="btn done" onclick="done(${i})">Đã giao</button>
+        <button class="btn del" onclick="del(${i})">Xóa</button>
+      </div>
+    `;
+  });
+
+  dayEl.innerText = day.toLocaleString()+"đ";
+  weekEl.innerText = week.toLocaleString()+"đ";
+  monthEl.innerText = month.toLocaleString()+"đ";
+  count.innerText = orders.length;
+
+  document.getElementById("day").id="dayEl";
+  document.getElementById("week").id="weekEl";
+  document.getElementById("month").id="monthEl";
+}
+
+function done(i){
+  let orders = JSON.parse(localStorage.getItem('orders'));
+  orders[i].status="Đã giao";
+  localStorage.setItem('orders',JSON.stringify(orders));
+  load();
+}
+function del(i){
+  if(confirm("Xóa đơn?")){
+    let orders = JSON.parse(localStorage.getItem('orders'));
+    orders.splice(i,1);
+    localStorage.setItem('orders',JSON.stringify(orders));
+    load();
+  }
+}
+</script>
+
+</body>
+</html>

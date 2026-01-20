@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Food Shop - Trang chủ</title>
+  <style>
+    body { font-family: Arial; margin: 0; background: #f9f9f9; }
+    header { background: #e74c3c; color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+    nav a { color: #fff; margin-left: 20px; text-decoration: none; font-weight: bold; }
+    section { padding: 40px; max-width: 1000px; margin: auto; }
+    .foods { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+    .food { background: #fff; padding: 15px; border-radius: 8px; text-align: center; }
+    .food img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; }
+
+    .qty {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .qty button {
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: #ddd;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .add-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    footer { background: #333; color: #fff; text-align: center; padding: 15px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🍽 Food Shop</h1>
+  <nav>
+    <a href="index.html">Trang chủ</a>
+    <a href="cart.html">Giỏ hàng</a>
+    <a href="admin.html">Admin</a>
+  </nav>
+</header>
+
+<section>
+  <h2>Trang chủ</h2>
+  <div class="foods">
+
+    <!-- Trà sữa -->
+    <div class="food">
+      <img src="img/trasua.jfif">
+      <h3>Trà sữa</h3>
+      <p>30.000đ</p>
+
+      <div class="qty">
+        <button onclick="changeQty('trasua',-1)">-</button>
+        <span id="trasua">1</span>
+        <button onclick="changeQty('trasua',1)">+</button>
+      </div>
+
+      <button class="add-btn" onclick="addToCart('Trà sữa',30000,'trasua')">
+        Thêm vào giỏ
+      </button>
+    </div>
+
+    <!-- Cơm tấm -->
+    <div class="food">
+      <img src="img/comtam.jfif">
+      <h3>Cơm tấm</h3>
+      <p>45.000đ</p>
+
+      <div class="qty">
+        <button onclick="changeQty('comtam',-1)">-</button>
+        <span id="comtam">1</span>
+        <button onclick="changeQty('comtam',1)">+</button>
+      </div>
+
+      <button class="add-btn" onclick="addToCart('Cơm tấm',45000,'comtam')">
+        Thêm vào giỏ
+      </button>
+    </div>
+
+    <!-- Bánh mì -->
+    <div class="food">
+      <img src="img/banhmi.jfif">
+      <h3>Bánh mì</h3>
+      <p>20.000đ</p>
+
+      <div class="qty">
+        <button onclick="changeQty('banhmi',-1)">-</button>
+        <span id="banhmi">1</span>
+        <button onclick="changeQty('banhmi',1)">+</button>
+      </div>
+
+      <button class="add-btn" onclick="addToCart('Bánh mì',20000,'banhmi')">
+        Thêm vào giỏ
+      </button>
+    </div>
+
+    <!-- Phở -->
+    <div class="food">
+      <img src="img/pho.jfif">
+      <h3>Phở</h3>
+      <p>50.000đ</p>
+
+      <div class="qty">
+        <button onclick="changeQty('pho',-1)">-</button>
+        <span id="pho">1</span>
+        <button onclick="changeQty('pho',1)">+</button>
+      </div>
+
+      <button class="add-btn" onclick="addToCart('Phở',50000,'pho')">
+        Thêm vào giỏ
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<footer>© 2026 Food Shop</footer>
+
+<script>
+function changeQty(id, step) {
+  let el = document.getElementById(id);
+  let value = parseInt(el.innerText) + step;
+  if (value < 1) value = 1;
+  el.innerText = value;
+}
+
+function addToCart(name, price, id) {
+  let qty = parseInt(document.getElementById(id).innerText);
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+  cart.push({ name, price, qty });
+  localStorage.setItem('cart', JSON.stringify(cart));
+
+  alert('Đã thêm ' + qty + ' ' + name);
+}
+</script>
+
+</body>
+</html>

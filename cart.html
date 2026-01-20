@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Giỏ hàng</title>
+<style>
+body{font-family:Arial;background:#f4f4f4;margin:0}
+.box{max-width:700px;margin:30px auto;background:#fff;padding:20px;border-radius:10px}
+.item{display:flex;justify-content:space-between;align-items:center;margin:10px 0}
+.qty button{width:25px;height:25px}
+button{background:#e74c3c;color:#fff;border:none;padding:5px 10px;border-radius:5px;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>🛒 Giỏ hàng</h2>
+<div id="list"></div>
+<h3>Tổng: <span id="total">0</span> đ</h3>
+<button onclick="order()">Đặt hàng</button>
+</div>
+
+<script>
+let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+function render(){
+  let list = document.getElementById('list');
+  let total = 0;
+  list.innerHTML = '';
+
+  cart.forEach((i,index)=>{
+    let money = i.price * i.qty;
+    total += money;
+
+    list.innerHTML += `
+      <div class="item">
+        <div>
+          <b>${i.name}</b><br>
+          ${money.toLocaleString()}đ
+        </div>
+
+        <div class="qty">
+          <button onclick="change(${index},-1)">-</button>
+          ${i.qty}
+          <button onclick="change(${index},1)">+</button>
+        </div>
+
+        <button onclick="removeItem(${index})">X</button>
+      </div>
+    `;
+  });
+
+  document.getElementById('total').innerText = total.toLocaleString();
+  localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function change(i,step){
+  cart[i].qty += step;
+  if(cart[i].qty < 1) cart[i].qty = 1;
+  render();
+}
+
+function removeItem(i){
+  cart.splice(i,1);
+  render();
+}
+
+function order(){
+  let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  orders.push({
+    time:new Date().toLocaleString(),
+    items:cart,
+    total:cart.reduce((s,i)=>s+i.price*i.qty,0)
+  });
+  localStorage.setItem('orders',JSON.stringify(orders));
+  localStorage.removeItem('cart');
+  alert('Đặt hàng thành công');
+  location.href='index.html';
+}
+
+render();
+</script>
+
+</body>
+</html>
